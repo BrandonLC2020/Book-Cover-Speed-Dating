@@ -1,45 +1,20 @@
 import random
 import httpx
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from typing import List, Optional
+from fastapi import APIRouter, HTTPException
+from .models import Book, SubjectResponse, BookListResponse
 
-app = FastAPI()
+router = APIRouter()
 
-# --- 1. DATA MODELS (Pydantic) ---
-# These define the structure of the data your Flutter app will receive.
-# This ensures strict typing and automatic documentation.
-
-class Book(BaseModel):
-    title: str
-    author: str
-    cover_url: Optional[str] = None # We'll build the full URL here for easier Flutter usage
-    open_library_key: str
-
-class SubjectResponse(BaseModel):
-    subject: str
-
-class BookListResponse(BaseModel):
-    subject: str
-    books: List[Book]
-
-
-# --- 2. HARDCODED DATA ---
-# A curated list of interesting subjects to randomize the "Discovery" aspect.
+# --- HARDCODED DATA ---
 SUBJECTS = [
     "science_fiction", "fantasy", "mystery", "romance", "horror",
     "historical_fiction", "robots", "pizza", "pirates", "time_travel",
     "vikings", "cyberpunk", "gardening", "minimalism", "basketball"
 ]
 
+# --- ENDPOINTS ---
 
-# --- 3. ENDPOINTS ---
-
-@app.get("/")
-async def root():
-    return {"message": "Judge a Book API is running"}
-
-@app.get("/api/subjects/random", response_model=SubjectResponse)
+@router.get("/subjects/random", response_model=SubjectResponse)
 async def get_random_subject():
     """
     Returns a random subject to trigger the UI 'discovery' flow.
@@ -48,7 +23,7 @@ async def get_random_subject():
     return {"subject": selected_subject}
 
 
-@app.get("/api/books/{subject}", response_model=BookListResponse)
+@router.get("/books/{subject}", response_model=BookListResponse)
 async def get_books_by_subject(subject: str):
     """
     1. Calls Open Library Search API.
@@ -71,6 +46,7 @@ async def get_books_by_subject(subject: str):
             response.raise_for_status()
             data = response.json()
         except httpx.HTTPError as e:
+            # We log the error internally here in a real app
             raise HTTPException(status_code=502, detail="Failed to fetch data from Open Library")
 
     clean_books = []
@@ -83,12 +59,11 @@ async def get_books_by_subject(subject: str):
 
         # 2. Handle Covers
         # Open Library returns a 'cover_i' integer. We need to build the URL.
-        # If no cover_i exists, we can send None or a placeholder.
         cover_id = doc.get("cover_i")
         cover_url = f"https://covers.openlibrary.org/b/id/{cover_id}-L.jpg" if cover_id else None
 
         # 3. Create Clean Book Object
-        # We filter out books without covers if you want the UI to be purely visual
+        # We filter out books without covers because this is a visual "Speed Dating" app
         if cover_url: 
             book = Book(
                 title=doc.get("title", "Untitled"),
@@ -102,6 +77,3 @@ async def get_books_by_subject(subject: str):
         "subject": subject,
         "books": clean_books
     }
-
-# --- 4. RUNNER ---
-# To run: uvicorn main:app --reload
