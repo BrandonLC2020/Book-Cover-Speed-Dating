@@ -214,7 +214,7 @@ class _BookSwipeContentState extends State<BookSwipeContent> {
       children: [
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Stack(
               alignment: Alignment.center,
               children: [
