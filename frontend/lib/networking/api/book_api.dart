@@ -1,25 +1,21 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import '../../models/book.dart';
+import '../dio_client.dart';
 
 class BookApi {
-  // Update this base URL to match your backend server
-  // For local development, use: http://localhost:8000
-  // For emulator, use: http://10.0.2.2:8000 (Android) or http://localhost:8000 (iOS)
-  static const String baseUrl = 'http://localhost:8000';
+  final Dio _dio = DioClient().dio;
 
   Future<SubjectResponse> getRandomSubject() async {
     try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/api/subjects/random'),
-        headers: {'Content-Type': 'application/json'},
-      );
+      final response = await _dio.get('/api/subjects/random');
 
       if (response.statusCode == 200) {
-        return SubjectResponse.fromJson(json.decode(response.body));
+        return SubjectResponse.fromJson(response.data);
       } else {
         throw Exception('Failed to load random subject: ${response.statusCode}');
       }
+    } on DioException catch (e) {
+       throw Exception('Error fetching random subject: ${e.message}');
     } catch (e) {
       throw Exception('Error fetching random subject: $e');
     }
@@ -27,19 +23,17 @@ class BookApi {
 
   Future<BookListResponse> getBooksBySubject(String subject) async {
     try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/api/books/$subject'),
-        headers: {'Content-Type': 'application/json'},
-      );
+      final response = await _dio.get('/api/books/$subject');
 
       if (response.statusCode == 200) {
-        return BookListResponse.fromJson(json.decode(response.body));
+        return BookListResponse.fromJson(response.data);
       } else {
         throw Exception('Failed to load books: ${response.statusCode}');
       }
+    } on DioException catch (e) {
+      throw Exception('Error fetching books: ${e.message}');
     } catch (e) {
       throw Exception('Error fetching books: $e');
     }
   }
 }
-
