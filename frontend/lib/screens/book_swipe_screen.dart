@@ -7,9 +7,75 @@ import '../bloc/book_swipe_bloc.dart';
 import '../components/book_cover_card.dart';
 import '../components/book_details_overlay.dart';
 import '../models/book.dart';
+import '../utils/constants.dart';
 
 class BookSwipeScreen extends StatelessWidget {
   const BookSwipeScreen({super.key});
+
+  void _showGenreSelectionDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        height: MediaQuery.of(context).size.height * 0.7,
+        decoration: BoxDecoration(
+          color: Colors.grey[900],
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          border: Border.all(color: Colors.white24),
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.white30,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(bottom: 16.0),
+              child: Text(
+                'Select Genre',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: AVAILABLE_SUBJECTS.length,
+                itemBuilder: (context, index) {
+                  final subject = AVAILABLE_SUBJECTS[index];
+                  return ListTile(
+                    title: Text(
+                      subject.replaceAll('_', ' ').toUpperCase(),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        letterSpacing: 1.2,
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      context.read<BookSwipeBloc>().add(LoadSpecificSubject(subject));
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,25 +153,37 @@ class BookSwipeScreen extends StatelessWidget {
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(top: 16, bottom: 8),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.white30),
-                            borderRadius: BorderRadius.circular(20),
-                            color: Colors.black26,
-                          ),
-                          child: Text(
-                            currentSubject.replaceAll('_', ' ').toUpperCase(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.5,
-                              fontSize: 12,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: Colors.white30),
+                                borderRadius: BorderRadius.circular(20),
+                                color: Colors.black26,
+                              ),
+                              child: Text(
+                                currentSubject.replaceAll('_', ' ').toUpperCase(),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 1.5,
+                                  fontSize: 12,
+                                ),
+                              ),
                             ),
-                          ),
+                            Positioned(
+                              right: 16,
+                              child: IconButton(
+                                icon: const Icon(Icons.filter_list, color: Colors.white),
+                                onPressed: () => _showGenreSelectionDialog(context),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       Expanded(

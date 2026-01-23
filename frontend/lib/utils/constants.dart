@@ -1,0 +1,16 @@
+const List<String> AVAILABLE_SUBJECTS = [
+  'fiction',
+  'mystery',
+  'thriller_suspense',
+  'romance',
+  'science_fiction',
+  'fantasy',
+  'non_fiction',
+  'history',
+  'biography',
+  'horror',
+  'adventure',
+  'young_adult',
+  'children',
+  'classics',
+];

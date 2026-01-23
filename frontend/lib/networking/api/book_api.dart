@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import '../../models/book.dart';
+import '../dto/book_response.dart';
 import '../dio_client.dart';
 
 class BookApi {

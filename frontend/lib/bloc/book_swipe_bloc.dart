@@ -31,6 +31,15 @@ class LoadNextSubject extends BookSwipeEvent {
   const LoadNextSubject();
 }
 
+class LoadSpecificSubject extends BookSwipeEvent {
+  final String subject;
+
+  const LoadSpecificSubject(this.subject);
+
+  @override
+  List<Object?> get props => [subject];
+}
+
 // States
 abstract class BookSwipeState extends Equatable {
   const BookSwipeState();
@@ -109,6 +118,7 @@ class BookSwipeBloc extends Bloc<BookSwipeEvent, BookSwipeState> {
     on<SwipeRight>(_onSwipeRight);
     on<CloseDetails>(_onCloseDetails);
     on<LoadNextSubject>(_onLoadNextSubject);
+    on<LoadSpecificSubject>(_onLoadSpecificSubject);
   }
 
   Future<void> _onLoadBooks(LoadBooks event, Emitter<BookSwipeState> emit) async {
@@ -201,6 +211,26 @@ class BookSwipeBloc extends Bloc<BookSwipeEvent, BookSwipeState> {
       if (bookListResponse.books.isEmpty) {
         // If still no books, try again
         add(const LoadNextSubject());
+      } else {
+        emit(BookSwipeLoaded(
+          books: bookListResponse.books,
+          currentIndex: 0,
+          currentSubject: bookListResponse.subject,
+        ));
+      }
+    } catch (e) {
+      emit(BookSwipeError(e.toString()));
+    }
+  }
+  Future<void> _onLoadSpecificSubject(LoadSpecificSubject event, Emitter<BookSwipeState> emit) async {
+    emit(const BookSwipeLoading());
+
+    try {
+      // Get books for the selected subject
+      final bookListResponse = await _bookApi.getBooksBySubject(event.subject);
+
+      if (bookListResponse.books.isEmpty) {
+        emit(BookSwipeError('No books found for ${event.subject}'));
       } else {
         emit(BookSwipeLoaded(
           books: bookListResponse.books,
