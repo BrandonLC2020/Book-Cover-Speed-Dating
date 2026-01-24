@@ -10,13 +10,13 @@ This project is a full-stack application composed of a Flutter frontend and a Py
 
 ```mermaid
 graph TD
-    subgraph Frontend (Flutter)
+    subgraph "Frontend (Flutter)"
         A[User Interface <br/>(Material 3, card_swiper)]
         B[State Management <br/>(flutter_bloc)]
         C[HTTP Client <br/>(dio)]
     end
 
-    subgraph Backend (FastAPI)
+    subgraph "Backend (FastAPI)"
         D[API Endpoints <br/>(/subjects, /books)]
         E[Data Cleaning & Formatting]
         F[Pydantic Models]
