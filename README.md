@@ -11,19 +11,19 @@ This project is a full-stack application composed of a Flutter frontend and a Py
 ```mermaid
 graph TD
     subgraph "Frontend (Flutter)"
-        A[User Interface <br/>(Material 3, card_swiper)]
-        B[State Management <br/>(flutter_bloc)]
-        C[HTTP Client <br/>(dio)]
+        A["User Interface <br/>(Material 3, card_swiper)"]
+        B["State Management <br/>(flutter_bloc)"]
+        C["HTTP Client <br/>(dio)"]
     end
 
     subgraph "Backend (FastAPI)"
-        D[API Endpoints <br/>(/subjects, /books)]
-        E[Data Cleaning & Formatting]
-        F[Pydantic Models]
+        D["API Endpoints <br/>(/subjects, /books)"]
+        E["Data Cleaning & Formatting"]
+        F["Pydantic Models"]
     end
 
     subgraph External Service
-        G[Open Library API]
+        G["Open Library API"]
     end
 
     A --> B
@@ -41,17 +41,17 @@ graph TD
 ```mermaid
 graph TD
     subgraph Frontend Technologies
-        F[Flutter Framework]
-        SM(State Management:<br/>flutter_bloc)
-        UI(UI Components:<br/>card_swiper,<br/>Material 3)
-        HTTP(HTTP Client:<br/>dio)
-        IL(Image Loading:<br/>cached_network_image)
+        F["Flutter Framework"]
+        SM("State Management:<br/>flutter_bloc")
+        UI("UI Components:<br/>card_swiper,<br/>Material 3")
+        HTTP("HTTP Client:<br/>dio")
+        IL("Image Loading:<br/>cached_network_image")
     end
 
     subgraph Backend Technologies
-        B[FastAPI Framework]
-        B_HTTP(HTTP Client:<br/>httpx)
-        B_Server(Server:<br/>Uvicorn)
+        B["FastAPI Framework"]
+        B_HTTP("HTTP Client:<br/>httpx")
+        B_Server("Server:<br/>Uvicorn")
     end
 
     F --- SM
