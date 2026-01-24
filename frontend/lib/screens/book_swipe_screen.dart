@@ -13,6 +13,7 @@ class BookSwipeScreen extends StatelessWidget {
   const BookSwipeScreen({super.key});
 
   void _showGenreSelectionDialog(BuildContext context) {
+    final bookSwipeBloc = context.read<BookSwipeBloc>();
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -65,7 +66,7 @@ class BookSwipeScreen extends StatelessWidget {
                     ),
                     onTap: () {
                       Navigator.pop(context);
-                      context.read<BookSwipeBloc>().add(LoadSpecificSubject(subject));
+                      bookSwipeBloc.add(LoadSpecificSubject(subject));
                     },
                   );
                 },
@@ -153,37 +154,50 @@ class BookSwipeScreen extends StatelessWidget {
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(top: 16, bottom: 8),
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.white30),
-                                borderRadius: BorderRadius.circular(20),
-                                color: Colors.black26,
-                              ),
-                              child: Text(
-                                currentSubject.replaceAll('_', ' ').toUpperCase(),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1.5,
-                                  fontSize: 12,
+                        child: Container(
+                          constraints: BoxConstraints(
+                            maxWidth: MediaQuery.of(context).size.width - 32,
+                            minWidth: 200,
+                          ),
+                          margin: const EdgeInsets.symmetric(horizontal: 16),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.white30),
+                            borderRadius: BorderRadius.circular(20),
+                            color: Colors.black26,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  currentSubject.replaceAll('_', ' ').toUpperCase(),
+                                  textAlign: TextAlign.center,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.5,
+                                    fontSize: 12,
+                                  ),
                                 ),
                               ),
-                            ),
-                            Positioned(
-                              right: 16,
-                              child: IconButton(
-                                icon: const Icon(Icons.filter_list, color: Colors.white),
-                                onPressed: () => _showGenreSelectionDialog(context),
+                              const SizedBox(width: 8),
+                              GestureDetector(
+                                onTap: () => _showGenreSelectionDialog(context),
+                                child: const Icon(
+                                  Icons.filter_list,
+                                  color: Colors.white,
+                                  size: 20,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                       Expanded(

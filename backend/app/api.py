@@ -24,7 +24,7 @@ async def get_random_subject():
 
 
 @router.get("/books/{subject}", response_model=BookListResponse)
-async def get_books_by_subject(subject: str):
+async def get_books_by_subject(subject: str, page: int = 1):
     """
     1. Calls Open Library Search API.
     2. Cleans the messy JSON.
@@ -37,6 +37,7 @@ async def get_books_by_subject(subject: str):
     params = {
         "q": subject,
         "limit": 15,
+        "page": page,
         "fields": "title,author_name,cover_i,key" 
     }
 

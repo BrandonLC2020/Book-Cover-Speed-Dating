@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../models/book.dart';
+import '../networking/api/book_api.dart';
 
-class BookDetailsOverlay extends StatelessWidget {
+class BookDetailsOverlay extends StatefulWidget {
   final Book book;
   final VoidCallback onClose;
 
@@ -13,12 +14,46 @@ class BookDetailsOverlay extends StatelessWidget {
   });
 
   @override
+  State<BookDetailsOverlay> createState() => _BookDetailsOverlayState();
+}
+
+class _BookDetailsOverlayState extends State<BookDetailsOverlay> {
+  late Book _book;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _book = widget.book;
+    _fetchDetails();
+  }
+
+  Future<void> _fetchDetails() async {
+    try {
+      final updatedBook = await BookApi().getBookDetails(widget.book);
+      if (mounted) {
+        setState(() {
+          _book = updatedBook;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+      print('Error fetching book details: $e');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Material(
       color: Colors.black54,
       child: SafeArea(
         child: GestureDetector(
-          onTap: onClose,
+          onTap: widget.onClose,
           child: Container(
             color: Colors.transparent,
             child: Center(
@@ -33,7 +68,7 @@ class BookDetailsOverlay extends StatelessWidget {
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
+                        color: Colors.black.withValues(alpha: 0.3),
                         blurRadius: 20,
                         spreadRadius: 5,
                       ),
@@ -52,9 +87,9 @@ class BookDetailsOverlay extends StatelessWidget {
                               // Stack for Cover + Close button
                               Stack(
                                 children: [
-                                  if (book.coverUrl != null)
+                                  if (_book.coverUrl != null)
                                     CachedNetworkImage(
-                                      imageUrl: book.coverUrl!,
+                                      imageUrl: _book.coverUrl!,
                                       width: double.infinity,
                                       fit: BoxFit.cover,
                                       alignment: Alignment.topCenter,
@@ -98,12 +133,12 @@ class BookDetailsOverlay extends StatelessWidget {
                                     right: 8,
                                     child: Container(
                                       decoration: BoxDecoration(
-                                        color: Colors.black.withOpacity(0.5),
+                                        color: Colors.black.withValues(alpha: 0.5),
                                         shape: BoxShape.circle,
                                       ),
                                       child: IconButton(
                                         icon: const Icon(Icons.close, color: Colors.white),
-                                        onPressed: onClose,
+                                        onPressed: widget.onClose,
                                       ),
                                     ),
                                   ),
@@ -117,7 +152,7 @@ class BookDetailsOverlay extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      book.title,
+                                      _book.title,
                                       style: const TextStyle(
                                         fontSize: 24, // Slightly smaller for better fit
                                         fontWeight: FontWeight.bold,
@@ -134,7 +169,7 @@ class BookDetailsOverlay extends StatelessWidget {
                                         const SizedBox(width: 6),
                                         Expanded(
                                           child: Text(
-                                            book.author,
+                                            _book.author,
                                             style: const TextStyle(
                                               fontSize: 18,
                                               color: Colors.grey,
@@ -144,7 +179,58 @@ class BookDetailsOverlay extends StatelessWidget {
                                         ),
                                       ],
                                     ),
-                                    // Add some description placeholder if needed in future
+                                     const SizedBox(height: 16),
+                                    if (_isLoading)
+                                      const Center(child: CircularProgressIndicator())
+                                    else ...[
+                                      if (_book.description != null) ...[
+                                        const Text(
+                                          'Description',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          _book.description!,
+                                          style: const TextStyle(fontSize: 16, height: 1.5),
+                                        ),
+                                        const SizedBox(height: 16),
+                                      ],
+                                      if (_book.subjects != null && _book.subjects!.isNotEmpty) ...[
+                                        const Text(
+                                          'Subjects',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Wrap(
+                                          spacing: 8,
+                                          runSpacing: 8,
+                                          children: _book.subjects!.map((subject) {
+                                            return Chip(
+                                              label: Text(subject),
+                                              backgroundColor: Colors.grey[200],
+                                            );
+                                          }).toList(),
+                                        ),
+                                        const SizedBox(height: 16),
+                                      ],
+                                      if (_book.publishers != null && _book.publishers!.isNotEmpty) ...[
+                                        Text(
+                                          'Publisher: ${_book.publishers!.join(", ")}',
+                                          style: const TextStyle(color: Colors.grey),
+                                        ),
+                                      ],
+                                      if (_book.publishDate != null)
+                                        Text(
+                                          'Published: ${_book.publishDate}',
+                                          style: const TextStyle(color: Colors.grey),
+                                        ),
+                                    ],
                                   ],
                                 ),
                               ),
@@ -159,7 +245,7 @@ class BookDetailsOverlay extends StatelessWidget {
                         child: SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: onClose,
+                            onPressed: widget.onClose,
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               backgroundColor: Colors.black, // Dark theme accent

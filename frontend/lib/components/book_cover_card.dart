@@ -17,6 +17,7 @@ class BookCoverCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: MediaQuery.of(context).size.height * 0.7,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
@@ -33,15 +34,15 @@ class BookCoverCard extends StatelessWidget {
         child: book.coverUrl != null
             ? CachedNetworkImage(
                 imageUrl: book.coverUrl!,
-                fit: BoxFit.contain,
+                fit: BoxFit.cover,
                 placeholder: (context, url) => Container(
-                  color: Colors.white10,
+                  color: Colors.transparent,
                   child: const Center(
                     child: CircularProgressIndicator(color: Colors.white),
                   ),
                 ),
                 errorWidget: (context, url, error) => Container(
-                  color: Colors.white10,
+                  color: Colors.transparent,
                   child: const Icon(
                     Icons.broken_image,
                     color: Colors.white54,
@@ -51,11 +52,7 @@ class BookCoverCard extends StatelessWidget {
               )
             : Container(
                 color: Colors.white10,
-                child: const Icon(
-                  Icons.book,
-                  color: Colors.white54,
-                  size: 60,
-                ),
+                child: const Icon(Icons.book, color: Colors.white54, size: 60),
               ),
       ),
     );
