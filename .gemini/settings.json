@@ -1,0 +1,30 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "name": "Backend Health",
+            "command": "echo \"Backend: $(curl -s -o /dev/null -w '%{http_code}' http://localhost:8000/api/ || echo 'Offline')\""
+          },
+          {
+            "type": "command",
+            "name": "Open Library Status",
+            "command": "echo \"Open Library: $(curl -s -o /dev/null -w '%{http_code}' 'https://openlibrary.org/search.json?q=test&limit=1' || echo 'Unreachable')\""
+          },
+          {
+            "type": "command",
+            "name": "Frontend Lints",
+            "command": "cd frontend && flutter analyze --no-pub | grep -E \"issues? found\" || echo \"Clean\""
+          },
+          {
+            "type": "command",
+            "name": "Backend Deps",
+            "command": "cd backend && poetry check > /dev/null 2>&1 && echo \"OK\" || echo \"Issues Found\""
+          }
+        ]
+      }
+    ]
+  }
+}
