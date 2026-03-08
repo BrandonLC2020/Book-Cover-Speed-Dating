@@ -132,7 +132,23 @@ poetry run uvicorn app.main:app --reload
 ```
 The API will now be running at `http://127.0.0.1:8000`.
 
-### 2. Frontend Setup
+### 2. AWS Lambda Deployment (Optional)
+
+The backend is also ready for deployment to AWS Lambda.
+
+```bash
+# 1. Navigate to the backend directory
+cd backend
+
+# 2. Build with SAM
+sam build
+
+# 3. Deploy to AWS
+sam deploy --guided
+```
+See [README_LAMBDA.md](backend/README_LAMBDA.md) for more details.
+
+### 3. Frontend Setup
 
 The Flutter app consumes the backend API to display the books.
 
