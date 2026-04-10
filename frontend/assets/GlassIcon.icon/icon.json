@@ -1,0 +1,31 @@
+{
+  "fill" : "automatic",
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "image-name" : "Book Cover Speed Dating Foreground.png",
+          "name" : "Book Cover Speed Dating Foreground"
+        },
+        {
+          "image-name" : "Book Cover Speed Dating Background.png",
+          "name" : "Book Cover Speed Dating Background"
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}
