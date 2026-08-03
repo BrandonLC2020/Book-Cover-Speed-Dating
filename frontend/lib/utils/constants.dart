@@ -1,4 +1,4 @@
-const List<String> AVAILABLE_SUBJECTS = [
+const List<String> availableSubjects = [
   'fiction',
   'mystery',
   'thriller_suspense',

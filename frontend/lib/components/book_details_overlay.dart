@@ -43,14 +43,18 @@ class _BookDetailsOverlayState extends State<BookDetailsOverlay> {
           _isLoading = false;
         });
       }
-      print('Error fetching book details: $e');
+      debugPrint('Error fetching book details: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Material(
-      color: Colors.black54,
+      color: Colors.black.withValues(alpha: 0.65),
       child: SafeArea(
         child: GestureDetector(
           onTap: widget.onClose,
@@ -60,17 +64,20 @@ class _BookDetailsOverlayState extends State<BookDetailsOverlay> {
               child: GestureDetector(
                 onTap: () {}, // Prevent tap from closing when tapping on card
                 child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                  margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                   constraints: const BoxConstraints(maxWidth: 500, maxHeight: 800),
-                  clipBehavior: Clip.hardEdge, // Ensure scrolling content doesn't bleed
+                  clipBehavior: Clip.hardEdge,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: colorScheme.surface,
                     borderRadius: BorderRadius.circular(24),
+                    border: Border.all(
+                      color: colorScheme.outlineVariant.withValues(alpha: 0.3),
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.3),
-                        blurRadius: 20,
-                        spreadRadius: 5,
+                        color: Colors.black.withValues(alpha: 0.4),
+                        blurRadius: 24,
+                        spreadRadius: 4,
                       ),
                     ],
                   ),
@@ -93,51 +100,51 @@ class _BookDetailsOverlayState extends State<BookDetailsOverlay> {
                                       width: double.infinity,
                                       fit: BoxFit.cover,
                                       alignment: Alignment.topCenter,
-                                      // Limit initial image height relative to screen or fixed max
-                                      height: 350, 
+                                      height: 340,
                                       placeholder: (context, url) => Container(
-                                        height: 350,
-                                        color: Colors.grey[300],
-                                        child: const Center(
-                                          child: CircularProgressIndicator(),
+                                        height: 340,
+                                        color: colorScheme.surfaceContainer,
+                                        child: Center(
+                                          child: CircularProgressIndicator(color: colorScheme.primary),
                                         ),
                                       ),
                                       errorWidget: (context, url, error) => Container(
-                                        height: 350,
-                                        color: Colors.grey[300],
-                                        child: const Center(
+                                        height: 340,
+                                        color: colorScheme.surfaceContainer,
+                                        child: Center(
                                           child: Icon(
                                             Icons.broken_image,
                                             size: 64,
-                                            color: Colors.grey,
+                                            color: colorScheme.onSurfaceVariant,
                                           ),
                                         ),
                                       ),
                                     )
                                   else
                                     Container(
-                                      height: 300,
-                                      color: Colors.grey[300],
-                                      child: const Center(
+                                      height: 280,
+                                      color: colorScheme.surfaceContainer,
+                                      child: Center(
                                         child: Icon(
                                           Icons.book,
                                           size: 64,
-                                          color: Colors.grey,
+                                          color: colorScheme.onSurfaceVariant,
                                         ),
                                       ),
                                     ),
                                     
                                   // Close button overlay
                                   Positioned(
-                                    top: 8,
-                                    right: 8,
+                                    top: 12,
+                                    right: 12,
                                     child: Container(
                                       decoration: BoxDecoration(
-                                        color: Colors.black.withValues(alpha: 0.5),
+                                        color: Colors.black.withValues(alpha: 0.6),
                                         shape: BoxShape.circle,
                                       ),
                                       child: IconButton(
                                         icon: const Icon(Icons.close, color: Colors.white),
+                                        tooltip: 'Close details',
                                         onPressed: widget.onClose,
                                       ),
                                     ),
@@ -152,58 +159,61 @@ class _BookDetailsOverlayState extends State<BookDetailsOverlay> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      _book.title,
-                                      style: const TextStyle(
-                                        fontSize: 24, // Slightly smaller for better fit
-                                        fontWeight: FontWeight.bold,
+                                      _book.title.isNotEmpty ? _book.title : 'Untitled Book',
+                                      style: textTheme.headlineSmall?.copyWith(
+                                        color: colorScheme.onSurface,
                                       ),
                                     ),
                                     const SizedBox(height: 8),
                                     Row(
                                       children: [
-                                        const Icon(
-                                          Icons.person,
+                                        Icon(
+                                          Icons.person_outline_rounded,
                                           size: 18,
-                                          color: Colors.grey,
+                                          color: colorScheme.primary,
                                         ),
                                         const SizedBox(width: 6),
                                         Expanded(
                                           child: Text(
-                                            _book.author,
-                                            style: const TextStyle(
-                                              fontSize: 18,
-                                              color: Colors.grey,
+                                            _book.author.isNotEmpty ? _book.author : 'Unknown Author',
+                                            style: textTheme.titleMedium?.copyWith(
+                                              color: colorScheme.onSurfaceVariant,
                                             ),
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                       ],
                                     ),
-                                     const SizedBox(height: 16),
+                                    const SizedBox(height: 16),
                                     if (_isLoading)
-                                      const Center(child: CircularProgressIndicator())
+                                      Center(
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(vertical: 24),
+                                          child: CircularProgressIndicator(color: colorScheme.primary),
+                                        ),
+                                      )
                                     else ...[
-                                      if (_book.description != null) ...[
-                                        const Text(
+                                      if (_book.description != null && _book.description!.isNotEmpty) ...[
+                                        Text(
                                           'Description',
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
+                                          style: textTheme.titleSmall?.copyWith(
+                                            color: colorScheme.onSurface,
                                           ),
                                         ),
                                         const SizedBox(height: 8),
                                         Text(
                                           _book.description!,
-                                          style: const TextStyle(fontSize: 16, height: 1.5),
+                                          style: textTheme.bodyMedium?.copyWith(
+                                            color: colorScheme.onSurface.withValues(alpha: 0.88),
+                                          ),
                                         ),
                                         const SizedBox(height: 16),
                                       ],
                                       if (_book.subjects != null && _book.subjects!.isNotEmpty) ...[
-                                        const Text(
+                                        Text(
                                           'Subjects',
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
+                                          style: textTheme.titleSmall?.copyWith(
+                                            color: colorScheme.onSurface,
                                           ),
                                         ),
                                         const SizedBox(height: 8),
@@ -212,8 +222,17 @@ class _BookDetailsOverlayState extends State<BookDetailsOverlay> {
                                           runSpacing: 8,
                                           children: _book.subjects!.map((subject) {
                                             return Chip(
-                                              label: Text(subject),
-                                              backgroundColor: Colors.grey[200],
+                                              label: Text(
+                                                subject,
+                                                style: textTheme.labelSmall?.copyWith(
+                                                  color: colorScheme.onPrimaryContainer,
+                                                ),
+                                              ),
+                                              backgroundColor: colorScheme.primaryContainer.withValues(alpha: 0.6),
+                                              side: BorderSide.none,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
                                             );
                                           }).toList(),
                                         ),
@@ -222,13 +241,17 @@ class _BookDetailsOverlayState extends State<BookDetailsOverlay> {
                                       if (_book.publishers != null && _book.publishers!.isNotEmpty) ...[
                                         Text(
                                           'Publisher: ${_book.publishers!.join(", ")}',
-                                          style: const TextStyle(color: Colors.grey),
+                                          style: textTheme.bodySmall?.copyWith(
+                                            color: colorScheme.onSurfaceVariant,
+                                          ),
                                         ),
                                       ],
                                       if (_book.publishDate != null)
                                         Text(
                                           'Published: ${_book.publishDate}',
-                                          style: const TextStyle(color: Colors.grey),
+                                          style: textTheme.bodySmall?.copyWith(
+                                            color: colorScheme.onSurfaceVariant,
+                                          ),
                                         ),
                                     ],
                                   ],
@@ -241,22 +264,26 @@ class _BookDetailsOverlayState extends State<BookDetailsOverlay> {
                       
                       // Footer Action
                       Padding(
-                        padding: const EdgeInsets.all(24),
+                        padding: const EdgeInsets.all(20),
                         child: SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
                             onPressed: widget.onClose,
                             style: ElevatedButton.styleFrom(
                               padding: const EdgeInsets.symmetric(vertical: 16),
-                              backgroundColor: Colors.black, // Dark theme accent
-                              foregroundColor: Colors.white,
+                              backgroundColor: colorScheme.primary,
+                              foregroundColor: colorScheme.onPrimary,
+                              elevation: 2,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(14),
                               ),
                             ),
-                            child: const Text(
+                            child: Text(
                               'Continue Swiping',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              style: textTheme.titleMedium?.copyWith(
+                                color: colorScheme.onPrimary,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import '../../models/book.dart';
 import '../dto/book_response.dart';
@@ -87,10 +88,10 @@ class BookApi {
       }
     } on DioException catch (e) {
       // If failing to fetch details, just return the original book
-      print('Error fetching book details: ${e.message}');
+      debugPrint('Error fetching book details: ${e.message}');
       return book;
     } catch (e) {
-      print('Error fetching book details: $e');
+      debugPrint('Error fetching book details: $e');
       return book;
     }
   }
