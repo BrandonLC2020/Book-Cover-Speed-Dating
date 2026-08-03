@@ -142,3 +142,30 @@ _override.tf.json
 # Include override files for the CLI
 .terraformrc
 terraform.rc
+.agents/modules/llc-logging
+.agents/modules/llc-flutter
+.agents/modules/llc-gcp-identity-platform
+.agents/modules/llc-api-health
+.agents/modules/llc-todo
+.agents/modules/llc-security
+.agents/modules/llc-ip-protection
+.agents/modules/llc-standards
+
+# b1CodingTool generated agent files
+CLAUDE.md
+CLAUDE.local.md
+AGENTS.override.md
+.claude/
+.agents/local/
+.agents/rules/local.md
+.agents/skills/b1-rule.md
+.agents/skills/b1-edge-case.md
+.agents/skills/b1-reconcile.md
+.agents/.b1-snapshots/
+
+PRODUCT.md
+DESIGN.md
+.impeccable/
+skills-lock.json
+.agents/skills/impeccable/
+
